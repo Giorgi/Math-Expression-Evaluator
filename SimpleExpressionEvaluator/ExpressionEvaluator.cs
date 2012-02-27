@@ -7,6 +7,9 @@ namespace SimpleExpressionEvaluator
 {
     public class ExpressionEvaluator
     {
+        private readonly Stack<Expression> expressionStack = new Stack<Expression>();
+        private readonly Stack<char> operatorStack = new Stack<char>();
+
         public decimal Evaluate(string expression)
         {
             if (string.IsNullOrWhiteSpace(expression))
@@ -14,8 +17,8 @@ namespace SimpleExpressionEvaluator
                 return 0;
             }
 
-            var expressionStack = new Stack<Expression>();
-            var operatorStack = new Stack<char>();
+            operatorStack.Clear();
+            expressionStack.Clear();
 
             using (var reader = new StringReader(expression))
             {
@@ -34,50 +37,27 @@ namespace SimpleExpressionEvaluator
                     {
                         var currentOperation = ReadOperation(reader);
 
-                        while (true)
-                        {
-                            if (operatorStack.Count == 0)
-                            {
-                                operatorStack.Push(next);
-                                break;
-                            }
+                        EvaluateWhile(() => operatorStack.Count > 0 &&
+                                            currentOperation.Precedence <= ((Operation)operatorStack.Peek()).Precedence);
 
-                            var lastOperition = operatorStack.Peek();
-
-                            if (currentOperation.Precedence > ((Operation)lastOperition).Precedence)
-                            {
-                                operatorStack.Push(next);
-                                break;
-                            }
-
-                            var right = expressionStack.Pop();
-                            var left = expressionStack.Pop();
-
-                            expressionStack.Push(((Operation)operatorStack.Pop()).Apply(left, right));
-                        }
+                        operatorStack.Push(next);
                         continue;
                     }
 
                     if (next != ' ')
                     {
-                        throw new ArgumentException("Invalid character encountered", "expression");
+                        throw new ArgumentException(string.Format("Encountered invalid character {0}", next), "expression");
                     }
                 }
             }
 
-            while (operatorStack.Count > 0)
-            {
-                var right = expressionStack.Pop();
-                var left = expressionStack.Pop();
-
-                expressionStack.Push(((Operation)operatorStack.Pop()).Apply(left, right));
-            }
+            EvaluateWhile(() => operatorStack.Count > 0);
 
             var compiled = Expression.Lambda<Func<decimal>>(expressionStack.Pop()).Compile();
             return compiled();
         }
 
-        private Expression ReadOperand(StringReader reader)
+        private Expression ReadOperand(TextReader reader)
         {
             var operand = string.Empty;
 
@@ -98,13 +78,24 @@ namespace SimpleExpressionEvaluator
                 }
             }
 
-            return Expression.Constant(string.IsNullOrEmpty(operand) ? decimal.Zero : decimal.Parse(operand));
+            return Expression.Constant(decimal.Parse(operand));
         }
 
         private Operation ReadOperation(TextReader reader)
         {
             var operation = (char)reader.Read();
             return (Operation)operation;
+        }
+
+        private void EvaluateWhile(Func<bool> condition)
+        {
+            while (condition())
+            {
+                var right = expressionStack.Pop();
+                var left = expressionStack.Pop();
+
+                expressionStack.Push(((Operation)operatorStack.Pop()).Apply(left, right));
+            }
         }
     }
 
