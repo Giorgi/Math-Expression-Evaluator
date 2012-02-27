@@ -37,10 +37,25 @@ namespace SimpleExpressionEvaluator
                     {
                         var currentOperation = ReadOperation(reader);
 
-                        EvaluateWhile(() => operatorStack.Count > 0 &&
+                        EvaluateWhile(() => operatorStack.Count > 0 && operatorStack.Peek() != '(' &&
                                             currentOperation.Precedence <= ((Operation)operatorStack.Peek()).Precedence);
 
                         operatorStack.Push(next);
+                        continue;
+                    }
+
+                    if (next == '(')
+                    {
+                        reader.Read();
+                        operatorStack.Push('(');
+                        continue;
+                    }
+
+                    if (next == ')')
+                    {
+                        reader.Read();
+                        EvaluateWhile(() => operatorStack.Count > 0 && operatorStack.Peek() != '(');
+                        operatorStack.Pop();
                         continue;
                     }
 

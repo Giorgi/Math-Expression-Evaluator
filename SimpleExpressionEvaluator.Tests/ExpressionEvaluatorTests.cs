@@ -82,5 +82,17 @@ namespace SimpleExpressionEvaluator.Tests
             Assert.That(engine.Evaluate("25/3+1.34*2.56+1.49+2.36/1.48"), Is.EqualTo(25 / 3m + 1.34m * 2.56m + 1.49m + 2.36m / 1.48m));
             Assert.That(engine.Evaluate("2*3+5-4-2*5+7"), Is.EqualTo(2 * 3 + 5 - 4 - 2 * 5 + 7));
         }
+
+        [Test]
+        public void Supports_Parentheses()
+        {
+            Assert.That(engine.Evaluate("2*(5+3)"), Is.EqualTo(2 * (5 + 3)));
+            Assert.That(engine.Evaluate("(5+3)*2"), Is.EqualTo((5 + 3) * 2));
+            Assert.That(engine.Evaluate("(5+3)*5-2"), Is.EqualTo((5 + 3) * 5 - 2));
+            Assert.That(engine.Evaluate("(5+3)*(5-2)"), Is.EqualTo((5 + 3) * (5 - 2)));
+            Assert.That(engine.Evaluate("((5+3)*3-(8-2)/2)/2"), Is.EqualTo(((5 + 3) * 3 - (8 - 2) / 2) / 2m));
+            Assert.That(engine.Evaluate("(4*(3+5)-4-8/2-(6-4)/2)*((2+4)*4-(8-5)/3)-5"), Is.EqualTo((4 * (3 + 5) - 4 - 8 / 2 - (6 - 4) / 2) * ((2 + 4) * 4 - (8 - 5) / 3) - 5));
+            Assert.That(engine.Evaluate("(((9-6/2)*2-4)/2-6-1)/(2+24/(2+4))"), Is.EqualTo((((9 - 6 / 2) * 2 - 4) / 2m - 6 - 1) / (2 + 24 / (2 + 4))));
+        }
     }
 }
