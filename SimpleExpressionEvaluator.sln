@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleExpressionEvaluator", "SimpleExpressionEvaluator\SimpleExpressionEvaluator.csproj", "{30637214-EDE9-4C2E-BFD6-E4B163FA308B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleExpressionEvaluator.Tests", "SimpleExpressionEvaluator.Tests\SimpleExpressionEvaluator.Tests.csproj", "{08F4484E-5FD8-4590-A8D7-12FBE47120C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{30637214-EDE9-4C2E-BFD6-E4B163FA308B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30637214-EDE9-4C2E-BFD6-E4B163FA308B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30637214-EDE9-4C2E-BFD6-E4B163FA308B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08F4484E-5FD8-4590-A8D7-12FBE47120C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08F4484E-5FD8-4590-A8D7-12FBE47120C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08F4484E-5FD8-4590-A8D7-12FBE47120C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08F4484E-5FD8-4590-A8D7-12FBE47120C8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
