@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace SimpleExpressionEvaluator
@@ -9,14 +10,21 @@ namespace SimpleExpressionEvaluator
     {
         private readonly Stack<Expression> expressionStack = new Stack<Expression>();
         private readonly Stack<char> operatorStack = new Stack<char>();
+        private readonly Dictionary<string, ParameterExpression> parameters;
 
-        public decimal Evaluate(string expression)
+        public ExpressionEvaluator()
+        {
+            parameters = new Dictionary<string, ParameterExpression>();
+        }
+
+        public decimal Evaluate(string expression, decimal variable1 = 0)
         {
             if (string.IsNullOrWhiteSpace(expression))
             {
                 return 0;
             }
 
+            parameters.Clear();
             operatorStack.Clear();
             expressionStack.Clear();
 
@@ -30,6 +38,14 @@ namespace SimpleExpressionEvaluator
                     if (char.IsDigit(next))
                     {
                         expressionStack.Push(ReadOperand(reader));
+                        continue;
+                    }
+
+                    if (char.IsLetter(next))
+                    {
+                        var parameter = ReadParameter(reader);
+
+                        expressionStack.Push(parameter);
                         continue;
                     }
 
@@ -68,9 +84,29 @@ namespace SimpleExpressionEvaluator
 
             EvaluateWhile(() => operatorStack.Count > 0);
 
-            var compiled = Expression.Lambda<Func<decimal>>(expressionStack.Pop()).Compile();
-            return compiled();
+            if (parameters.Count == 0)
+            {
+                var compiled = Expression.Lambda<Func<decimal>>(expressionStack.Pop(), parameters.Values).Compile();
+                return compiled();
+            }
+            else
+            {
+                var compiled = Expression.Lambda<Func<decimal, decimal>>(expressionStack.Pop(), parameters.Values).Compile();
+                return compiled(variable1);
+            }
         }
+
+        private void EvaluateWhile(Func<bool> condition)
+        {
+            while (condition())
+            {
+                var right = expressionStack.Pop();
+                var left = expressionStack.Pop();
+
+                expressionStack.Push(((Operation)operatorStack.Pop()).Apply(left, right));
+            }
+        }
+
 
         private Expression ReadOperand(TextReader reader)
         {
@@ -102,15 +138,35 @@ namespace SimpleExpressionEvaluator
             return (Operation)operation;
         }
 
-        private void EvaluateWhile(Func<bool> condition)
+        private ParameterExpression ReadParameter(TextReader reader)
         {
-            while (condition())
-            {
-                var right = expressionStack.Pop();
-                var left = expressionStack.Pop();
+            var operand = string.Empty;
 
-                expressionStack.Push(((Operation)operatorStack.Pop()).Apply(left, right));
+            int peek;
+
+            while ((peek = reader.Peek()) > -1)
+            {
+                var next = (char)peek;
+
+                if (char.IsLetter(next))
+                {
+                    reader.Read();
+                    operand += next;
+                }
+                else
+                {
+                    break;
+                }
             }
+
+            var parameter = Expression.Parameter(typeof(decimal), operand);
+
+            if (!parameters.ContainsKey(parameter.Name))
+            {
+                parameters.Add(parameter.Name, parameter);
+            }
+
+            return parameters[parameter.Name];
         }
     }
 

@@ -94,5 +94,13 @@ namespace SimpleExpressionEvaluator.Tests
             Assert.That(engine.Evaluate("(4*(3+5)-4-8/2-(6-4)/2)*((2+4)*4-(8-5)/3)-5"), Is.EqualTo((4 * (3 + 5) - 4 - 8 / 2 - (6 - 4) / 2) * ((2 + 4) * 4 - (8 - 5) / 3) - 5));
             Assert.That(engine.Evaluate("(((9-6/2)*2-4)/2-6-1)/(2+24/(2+4))"), Is.EqualTo((((9 - 6 / 2) * 2 - 4) / 2m - 6 - 1) / (2 + 24 / (2 + 4))));
         }
+
+        [Test]
+        public void Can_Process_Simple_Variables()
+        {
+            decimal a = 2.6m;
+            Assert.That(engine.Evaluate("a", a), Is.EqualTo(a));
+            Assert.That(engine.Evaluate("a+a", a), Is.EqualTo(a + a));
+        }
     }
 }
