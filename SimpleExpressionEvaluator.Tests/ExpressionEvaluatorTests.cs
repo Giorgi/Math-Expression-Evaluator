@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using NUnit.Framework;
 
@@ -99,8 +96,20 @@ namespace SimpleExpressionEvaluator.Tests
         public void Can_Process_Simple_Variables()
         {
             decimal a = 2.6m;
+            decimal b = 5.7m;
+
             Assert.That(engine.Evaluate("a", a), Is.EqualTo(a));
             Assert.That(engine.Evaluate("a+a", a), Is.EqualTo(a + a));
+            Assert.That(engine.Evaluate("a+b", a, b), Is.EqualTo(a + b));
+        }
+
+        [Test]
+        public void Can_Process_Multiple_Variables()
+        {
+            var a = 6;
+            var b = 4.32m;
+            var c = 24.15m;
+            Assert.That(engine.Evaluate("(((9-6/2)*2-4.32)/2-6-1)/(2+24.15/(2+4))"), Is.EqualTo((((9 - a / 2) * 2 - b) / 2m - a - 1) / (2 + c / (2 + 4))));
         }
     }
 }

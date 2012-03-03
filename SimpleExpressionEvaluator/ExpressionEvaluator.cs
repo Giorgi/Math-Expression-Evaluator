@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace SimpleExpressionEvaluator
@@ -10,19 +9,16 @@ namespace SimpleExpressionEvaluator
     {
         private readonly Stack<Expression> expressionStack = new Stack<Expression>();
         private readonly Stack<char> operatorStack = new Stack<char>();
-        private readonly Dictionary<string, ParameterExpression> parameters;
+        private readonly List<string> parameters = new List<string>();
 
-        public ExpressionEvaluator()
-        {
-            parameters = new Dictionary<string, ParameterExpression>();
-        }
-
-        public decimal Evaluate(string expression, decimal variable1 = 0)
+        public decimal Evaluate(string expression, params decimal[] arguments)
         {
             if (string.IsNullOrWhiteSpace(expression))
             {
                 return 0;
             }
+
+            var arrayParameter = Expression.Parameter(typeof(decimal[]), "args");
 
             parameters.Clear();
             operatorStack.Clear();
@@ -43,9 +39,7 @@ namespace SimpleExpressionEvaluator
 
                     if (char.IsLetter(next))
                     {
-                        var parameter = ReadParameter(reader);
-
-                        expressionStack.Push(parameter);
+                        expressionStack.Push(ReadParameter(reader, arrayParameter));
                         continue;
                     }
 
@@ -54,7 +48,7 @@ namespace SimpleExpressionEvaluator
                         var currentOperation = ReadOperation(reader);
 
                         EvaluateWhile(() => operatorStack.Count > 0 && operatorStack.Peek() != '(' &&
-                                            currentOperation.Precedence <= ((Operation)operatorStack.Peek()).Precedence);
+                            currentOperation.Precedence <= ((Operation)operatorStack.Peek()).Precedence);
 
                         operatorStack.Push(next);
                         continue;
@@ -77,23 +71,17 @@ namespace SimpleExpressionEvaluator
 
                     if (next != ' ')
                     {
-                        throw new ArgumentException(string.Format("Encountered invalid character {0}", next), "expression");
+                        throw new ArgumentException(string.Format("Encountered invalid character {0}", next),
+                            "expression");
                     }
                 }
             }
 
             EvaluateWhile(() => operatorStack.Count > 0);
 
-            if (parameters.Count == 0)
-            {
-                var compiled = Expression.Lambda<Func<decimal>>(expressionStack.Pop(), parameters.Values).Compile();
-                return compiled();
-            }
-            else
-            {
-                var compiled = Expression.Lambda<Func<decimal, decimal>>(expressionStack.Pop(), parameters.Values).Compile();
-                return compiled(variable1);
-            }
+            var lambda = Expression.Lambda<Func<decimal[], decimal>>(expressionStack.Pop(), arrayParameter);
+            var compiled = lambda.Compile();
+            return compiled(arguments);
         }
 
         private void EvaluateWhile(Func<bool> condition)
@@ -138,9 +126,9 @@ namespace SimpleExpressionEvaluator
             return (Operation)operation;
         }
 
-        private ParameterExpression ReadParameter(TextReader reader)
+        private Expression ReadParameter(TextReader reader, Expression arrayParameter)
         {
-            var operand = string.Empty;
+            var parameter = string.Empty;
 
             int peek;
 
@@ -151,7 +139,7 @@ namespace SimpleExpressionEvaluator
                 if (char.IsLetter(next))
                 {
                     reader.Read();
-                    operand += next;
+                    parameter += next;
                 }
                 else
                 {
@@ -159,14 +147,12 @@ namespace SimpleExpressionEvaluator
                 }
             }
 
-            var parameter = Expression.Parameter(typeof(decimal), operand);
-
-            if (!parameters.ContainsKey(parameter.Name))
+            if (!parameters.Contains(parameter))
             {
-                parameters.Add(parameter.Name, parameter);
+                parameters.Add(parameter);
             }
 
-            return parameters[parameter.Name];
+            return Expression.ArrayAccess(arrayParameter, Expression.Constant(parameters.IndexOf(parameter)));
         }
     }
 
