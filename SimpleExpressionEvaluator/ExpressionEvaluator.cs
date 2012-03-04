@@ -69,7 +69,11 @@ namespace SimpleExpressionEvaluator
                         continue;
                     }
 
-                    if (next != ' ')
+                    if (next == ' ')
+                    {
+                        reader.Read();
+                    }
+                    else
                     {
                         throw new ArgumentException(string.Format("Encountered invalid character {0}", next),
                             "expression");

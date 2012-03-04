@@ -109,7 +109,7 @@ namespace SimpleExpressionEvaluator.Tests
             var a = 6;
             var b = 4.32m;
             var c = 24.15m;
-            Assert.That(engine.Evaluate("(((9-6/2)*2-4.32)/2-6-1)/(2+24.15/(2+4))"), Is.EqualTo((((9 - a / 2) * 2 - b) / 2m - a - 1) / (2 + c / (2 + 4))));
+            Assert.That(engine.Evaluate("(((9-a/2)*2-b)/2-a-1)/(2+c/(2+4))", a, b, c), Is.EqualTo((((9 - a / 2) * 2 - b) / 2 - a - 1) / (2 + c / (2 + 4))));
         }
     }
 }
