@@ -98,18 +98,48 @@ namespace SimpleExpressionEvaluator.Tests
             decimal a = 2.6m;
             decimal b = 5.7m;
 
-            Assert.That(engine.Evaluate("a", a), Is.EqualTo(a));
-            Assert.That(engine.Evaluate("a+a", a), Is.EqualTo(a + a));
-            Assert.That(engine.Evaluate("a+b", a, b), Is.EqualTo(a + b));
+            Assert.That(engine.Evaluate("a", new { a }), Is.EqualTo(a));
+            Assert.That(engine.Evaluate("a+a", new { a }), Is.EqualTo(a + a));
+            Assert.That(engine.Evaluate("a+b", new { a, b }), Is.EqualTo(a + b));
         }
 
         [Test]
         public void Can_Process_Multiple_Variables()
         {
             var a = 6;
-            var b = 4.32m;
-            var c = 24.15m;
-            Assert.That(engine.Evaluate("(((9-a/2)*2-b)/2-a-1)/(2+c/(2+4))", a, b, c), Is.EqualTo((((9 - a / 2) * 2 - b) / 2 - a - 1) / (2 + c / (2 + 4))));
+            var b = 4.5m;
+            var c = 2.6m;
+            Assert.That(engine.Evaluate("(((9-a/2)*2-b)/2-a-1)/(2+c/(2+4))", new { a, b, c }), Is.EqualTo((((9 - a / 2) * 2 - b) / 2 - a - 1) / (2 + c / (2 + 4))));
+            Assert.That(engine.Evaluate("(c+b)*a", new { a, b, c }), Is.EqualTo((c + b) * a));
+        }
+
+        [Test]
+        public void Can_Pass_Named_Variables()
+        {
+            dynamic dynamicEngine = new ExpressionEvaluator();
+
+            var a = 6;
+            var b = 4.5m;
+            var c = 2.6m;
+
+            Assert.That(dynamicEngine.Evaluate("(c+b)*a", a: 6, b: 4.5, c: 2.6), Is.EqualTo((c + b) * a));
+        }
+
+        [Test]
+        public void Can_Invoke_Expression_Multiple_Times()
+        {
+            var a = 6m;
+            var b = 3.9m;
+            var c = 4.9m;
+
+            var compiled = engine.Compile("(a+b)/(a+c)");
+            Assert.That(compiled(new { a, b, c }), Is.EqualTo((a + b) / (a + c)));
+
+            a = 5.4m;
+            b = -2.4m;
+            c = 7.5m;
+
+            Assert.That(compiled(new { a, b, c }), Is.EqualTo((a + b) / (a + c)));
         }
     }
 }

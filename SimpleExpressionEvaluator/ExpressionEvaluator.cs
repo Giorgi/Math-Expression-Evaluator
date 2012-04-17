@@ -1,21 +1,80 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace SimpleExpressionEvaluator
 {
-    public class ExpressionEvaluator
+    public class ExpressionEvaluator : DynamicObject
     {
         private readonly Stack<Expression> expressionStack = new Stack<Expression>();
         private readonly Stack<char> operatorStack = new Stack<char>();
         private readonly List<string> parameters = new List<string>();
 
-        public decimal Evaluate(string expression, params decimal[] arguments)
+
+        public Func<object, decimal> Compile(string expression)
+        {
+            var compiled = Parse(expression);
+
+            Func<object, decimal> result = argument =>
+            {
+                var arguments = ParseArguments(argument);
+                return Execute(compiled, arguments);
+            };
+
+            return result;
+        }
+
+        public decimal Evaluate(string expression, object argument = null)
+        {
+            var arguments = ParseArguments(argument);
+
+            return Evaluate(expression, arguments);
+        }
+
+        public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
+        {
+            if ("Evaluate" != binder.Name)
+            {
+                return base.TryInvokeMember(binder, args, out result);
+            }
+
+            if (!(args[0] is string))
+            {
+                throw new ArgumentException("No expression specified for parsing");
+            }
+
+            //args will contain expression and arguments,
+            //ArgumentNames will contain only named arguments
+            if (args.Length != binder.CallInfo.ArgumentNames.Count + 1)
+            {
+                throw new ArgumentException("Argument names missing.");
+            }
+
+            var arguments = new Dictionary<string, decimal>();
+
+            for (int i = 0; i < binder.CallInfo.ArgumentNames.Count; i++)
+            {
+                if (IsNumeric(args[i + 1].GetType()))
+                {
+                    arguments.Add(binder.CallInfo.ArgumentNames[i], Convert.ToDecimal(args[i + 1]));
+                }
+            }
+
+            result = Evaluate((string)args[0], arguments);
+
+            return true;
+        }
+
+
+        private Func<decimal[], decimal> Parse(string expression)
         {
             if (string.IsNullOrWhiteSpace(expression))
             {
-                return 0;
+                return s => 0;
             }
 
             var arrayParameter = Expression.Parameter(typeof(decimal[]), "args");
@@ -85,8 +144,56 @@ namespace SimpleExpressionEvaluator
 
             var lambda = Expression.Lambda<Func<decimal[], decimal>>(expressionStack.Pop(), arrayParameter);
             var compiled = lambda.Compile();
-            return compiled(arguments);
+            return compiled;
         }
+
+        private Dictionary<string, decimal> ParseArguments(object argument)
+        {
+            if (argument == null)
+            {
+                return new Dictionary<string, decimal>();
+            }
+
+            var argumentType = argument.GetType();
+
+            var properties = argumentType.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                .Where(p => p.CanRead && IsNumeric(p.PropertyType));
+
+            var arguments = properties.ToDictionary(property => property.Name,
+                property => Convert.ToDecimal(property.GetValue(argument, null)));
+
+            return arguments;
+        }
+
+        private decimal Evaluate(string expression, Dictionary<string, decimal> arguments)
+        {
+            var compiled = Parse(expression);
+
+            return Execute(compiled, arguments);
+        }
+
+        private decimal Execute(Func<decimal[], decimal> compiled, Dictionary<string, decimal> arguments)
+        {
+            arguments = arguments ?? new Dictionary<string, decimal>();
+
+            if (parameters.Count != arguments.Count)
+            {
+                throw new ArgumentException(string.Format("Expression contains {0} parameters but got only {1}",
+                    parameters.Count, arguments.Count));
+            }
+
+            var missingParameters = parameters.Where(p => !arguments.ContainsKey(p)).ToList();
+
+            if (missingParameters.Any())
+            {
+                throw new ArgumentException("No values provided for parameters: " + string.Join(",", missingParameters));
+            }
+
+            var values = parameters.Select(parameter => arguments[parameter]).ToArray();
+
+            return compiled(values);
+        }
+
 
         private void EvaluateWhile(Func<bool> condition)
         {
@@ -98,7 +205,6 @@ namespace SimpleExpressionEvaluator
                 expressionStack.Push(((Operation)operatorStack.Pop()).Apply(left, right));
             }
         }
-
 
         private Expression ReadOperand(TextReader reader)
         {
@@ -156,7 +262,28 @@ namespace SimpleExpressionEvaluator
                 parameters.Add(parameter);
             }
 
-            return Expression.ArrayAccess(arrayParameter, Expression.Constant(parameters.IndexOf(parameter)));
+            return Expression.ArrayIndex(arrayParameter, Expression.Constant(parameters.IndexOf(parameter)));
+        }
+
+
+        private bool IsNumeric(Type type)
+        {
+            switch (Type.GetTypeCode(type))
+            {
+                case TypeCode.SByte:
+                case TypeCode.Byte:
+                case TypeCode.Int16:
+                case TypeCode.UInt16:
+                case TypeCode.Int32:
+                case TypeCode.UInt32:
+                case TypeCode.Int64:
+                case TypeCode.UInt64:
+                case TypeCode.Single:
+                case TypeCode.Double:
+                case TypeCode.Decimal:
+                    return true;
+            }
+            return false;
         }
     }
 
