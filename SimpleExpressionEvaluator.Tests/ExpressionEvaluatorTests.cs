@@ -143,7 +143,7 @@ namespace SimpleExpressionEvaluator.Tests
         }
 
         [Test]
-        public void Can_Invoke_Two_Expressions_With_Different_Parameters()
+        public void Can_Invoke_Two_Distinct_Expressions_With_Different_Parameters_Count()
         {
             var firstCompiled = _engine.Compile("(a+b)/(a+c)");
             var secondCompiled = _engine.Compile("a * b");
