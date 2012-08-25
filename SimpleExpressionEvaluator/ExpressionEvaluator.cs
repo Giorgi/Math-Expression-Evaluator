@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -10,10 +11,18 @@ namespace SimpleExpressionEvaluator
 {
     public class ExpressionEvaluator : DynamicObject
     {
-        private readonly Stack<Expression> expressionStack = new Stack<Expression>();
-        private readonly Stack<char> operatorStack = new Stack<char>();
-        private readonly List<string> parameters = new List<string>();
+        private readonly string decimalSeparator;
+        private readonly Stack<Expression> expressionStack;
+        private readonly Stack<char> operatorStack;
+        private readonly List<string> parameters;
 
+        public ExpressionEvaluator()
+        {
+            decimalSeparator = NumberFormatInfo.CurrentInfo.NumberDecimalSeparator;
+            expressionStack = new Stack<Expression>();
+            operatorStack = new Stack<char>();
+            parameters = new List<string>();
+        }
 
         public Func<object, decimal> Compile(string expression)
         {
@@ -216,10 +225,15 @@ namespace SimpleExpressionEvaluator
             {
                 var next = (char)peek;
 
-                if (char.IsDigit(next) || next == '.')
+                if (char.IsDigit(next))
                 {
                     reader.Read();
                     operand += next;
+                }
+                else if ((next == '.') || (next == ','))
+                {
+                    reader.Read();
+                    operand += decimalSeparator;
                 }
                 else
                 {

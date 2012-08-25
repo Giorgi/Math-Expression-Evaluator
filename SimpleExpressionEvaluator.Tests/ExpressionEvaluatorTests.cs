@@ -141,5 +141,22 @@ namespace SimpleExpressionEvaluator.Tests
 
             Assert.That(compiled(new { a, b, c }), Is.EqualTo((a + b) / (a + c)));
         }
+
+        [Test]
+        public void Can_Invoke_Two_Expressions_Multiple_Times()
+        {
+            var a = 6m;
+            var b = 3.9m;
+            var c = 4.9m;
+
+            var compiled = engine.Compile("(a+b)/(a+c)");
+            Assert.That(compiled(new { a, b, c }), Is.EqualTo((a + b) / (a + c)));
+
+            a = 5.4m;
+            b = -2.4m;
+            c = 7.5m;
+
+            Assert.That(compiled(new { a, b, c }), Is.EqualTo((a + b) / (a + c)));
+        }
     }
 }
