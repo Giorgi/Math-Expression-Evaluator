@@ -143,20 +143,20 @@ namespace SimpleExpressionEvaluator.Tests
         }
 
         [Test]
-        public void Can_Invoke_Two_Expressions_Multiple_Times()
+        public void Can_Invoke_Two_Distinct_Expressions_With_Different_Parameters_Count()
         {
+            var firstCompiled = engine.Compile("(a+b)/(a+c)");
+            var secondCompiled = engine.Compile("a * b");
+
             var a = 6m;
             var b = 3.9m;
             var c = 4.9m;
 
-            var compiled = engine.Compile("(a+b)/(a+c)");
-            Assert.That(compiled(new { a, b, c }), Is.EqualTo((a + b) / (a + c)));
+            Assert.That(firstCompiled(new { a, b, c }), Is.EqualTo((a + b) / (a + c)));
 
-            a = 5.4m;
-            b = -2.4m;
-            c = 7.5m;
-
-            Assert.That(compiled(new { a, b, c }), Is.EqualTo((a + b) / (a + c)));
+            a = 7.5m;
+            b = 2.2m;
+            Assert.That(secondCompiled(new { a, b }), Is.EqualTo(a * b));
         }
     }
 }
