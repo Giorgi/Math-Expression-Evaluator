@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -227,7 +228,7 @@ namespace SimpleExpressionEvaluator
                 }
             }
 
-            return Expression.Constant(decimal.Parse(operand));
+            return Expression.Constant(decimal.Parse(operand, CultureInfo.InvariantCulture));
         }
 
         private Operation ReadOperation(TextReader reader)
