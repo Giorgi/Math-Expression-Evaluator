@@ -2,3 +2,6 @@ SimpleExpressionEvaluator.Tests/bin/
 SimpleExpressionEvaluator.Tests/obj/
 SimpleExpressionEvaluator/bin/
 SimpleExpressionEvaluator/obj/
+*.user
+*.suo
+*.nupkg

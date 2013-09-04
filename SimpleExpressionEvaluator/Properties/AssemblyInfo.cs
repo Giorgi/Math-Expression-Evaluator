@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("SimpleExpressionEvaluator")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A c# library for parsing mathematical expressions with support for parentheses and variables.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("SimpleExpressionEvaluator")]
