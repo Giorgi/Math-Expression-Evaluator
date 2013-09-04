@@ -1,4 +1,4 @@
-SimpleExpressionEvaluator.Tests\bin
-SimpleExpressionEvaluator.Tests\obj
-SimpleExpressionEvaluator\bin
-SimpleExpressionEvaluator\obj
+SimpleExpressionEvaluator.Tests/bin/
+SimpleExpressionEvaluator.Tests/obj/
+SimpleExpressionEvaluator/bin/
+SimpleExpressionEvaluator/obj/
