@@ -141,5 +141,23 @@ namespace SimpleExpressionEvaluator.Tests
 
             Assert.That(compiled(new { a, b, c }), Is.EqualTo((a + b) / (a + c)));
         }
+
+        [Test]
+        public void NegativeNumber_Parsed_AsNegativeNumber()
+        {
+            var left = -generator.Next(1, 100);
+
+            Assert.That(engine.Evaluate(left.ToString()), Is.EqualTo(left));
+        }
+
+        [Test]
+        public void Can_EvaluateExpression_WithNegativeNumbers()
+        {
+            Assert.That(engine.Evaluate("-5 + 3"), Is.EqualTo(-5 + 3));
+            Assert.That(engine.Evaluate("5 + (-3)"), Is.EqualTo(5 + (-3)));
+
+            Assert.That(engine.Evaluate("5 + (4-3)"), Is.EqualTo(5 + (4 - 3)));
+            Assert.That(engine.Evaluate("5 + (-(4-3))"), Is.EqualTo(5 + (-(4 - 3))));
+        }
     }
 }
