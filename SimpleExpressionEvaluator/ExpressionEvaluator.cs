@@ -315,7 +315,7 @@ namespace SimpleExpressionEvaluator
         public static readonly Operation Subtraction = new Operation(1, Expression.Subtract, "Subtraction");
         public static readonly Operation Multiplication = new Operation(2, Expression.Multiply, "Multiplication");
         public static readonly Operation Division = new Operation(2, Expression.Divide, "Division");
-        public static readonly Operation UnaryMinus = new Operation(2, Expression.Negate, "Division");
+        public static readonly Operation UnaryMinus = new Operation(2, Expression.Negate, "Negation");
 
         private static readonly Dictionary<char, Operation> Operations = new Dictionary<char, Operation>
         {
