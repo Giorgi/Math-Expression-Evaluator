@@ -1,5 +1,6 @@
 ﻿using System;
-
+using System.Globalization;
+using System.Threading;
 using NUnit.Framework;
 
 namespace SimpleExpressionEvaluator.Tests
@@ -158,6 +159,20 @@ namespace SimpleExpressionEvaluator.Tests
 
             Assert.That(engine.Evaluate("5 + (4-3)"), Is.EqualTo(5 + (4 - 3)));
             Assert.That(engine.Evaluate("5 + (-(4-3))"), Is.EqualTo(5 + (-(4 - 3))));
+        }
+
+        [Test]
+        public void Can_ParseNumbers_InDifferentCulture()
+        {
+            var clone = (CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
+            clone.NumberFormat.NumberDecimalSeparator = ",";
+            clone.NumberFormat.NumberGroupSeparator = " ";
+            Thread.CurrentThread.CurrentCulture = clone;
+
+            Assert.That(engine.Evaluate("5,67"), Is.EqualTo(5.67));
+            Assert.That(engine.Evaluate("5 000"), Is.EqualTo(5000));
+
+            Assert.That(engine.Evaluate("5 000,67"), Is.EqualTo(5000.67));
         }
     }
 }

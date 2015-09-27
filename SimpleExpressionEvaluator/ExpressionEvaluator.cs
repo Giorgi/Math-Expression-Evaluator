@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -234,8 +235,11 @@ namespace SimpleExpressionEvaluator
             while ((peek = reader.Peek()) > -1)
             {
                 var next = (char)peek;
-                
-                if (char.IsDigit(next) || next == '.')
+
+                var decimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator[0];
+                var groupSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator[0];
+
+                if (char.IsDigit(next) || next == decimalSeparator || next == groupSeparator)
                 {
                     reader.Read();
                     operand += next;
