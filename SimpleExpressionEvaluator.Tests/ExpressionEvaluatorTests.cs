@@ -174,5 +174,22 @@ namespace SimpleExpressionEvaluator.Tests
 
             Assert.That(engine.Evaluate("5 000,67"), Is.EqualTo(5000.67));
         }
+
+        [Test]
+        public void Can_Invoke_Two_Distinct_Expressions_With_Different_Parameters_Count()
+        {
+            var a = 6m;
+            var b = 3.9m;
+            var c = 4.9m;
+
+            var compiled = engine.Compile("(a+b)/(a+c)");
+            var compiled2 = engine.Compile("(a+b)/a");
+            Assert.That(compiled(new { a, b, c }), Is.EqualTo((a + b) / (a + c)));
+
+            a = 5.4m;
+            b = -2.4m;
+
+            Assert.That(compiled2(new { a, b }), Is.EqualTo((a + b) / a));
+        }
     }
 }

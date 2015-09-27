@@ -20,11 +20,13 @@ namespace SimpleExpressionEvaluator
         {
             var compiled = Parse(expression);
 
-            Func<object, decimal> result = argument =>
+            Func<List<string>, Func<object, decimal>> curriedResult = list => argument =>
             {
                 var arguments = ParseArguments(argument);
-                return Execute(compiled, arguments);
+                return Execute(compiled, arguments, list);
             };
+
+            var result = curriedResult(parameters.ToList());
 
             return result;
         }
@@ -184,10 +186,10 @@ namespace SimpleExpressionEvaluator
         {
             var compiled = Parse(expression);
 
-            return Execute(compiled, arguments);
+            return Execute(compiled, arguments, parameters);
         }
 
-        private decimal Execute(Func<decimal[], decimal> compiled, Dictionary<string, decimal> arguments)
+        private decimal Execute(Func<decimal[], decimal> compiled, Dictionary<string, decimal> arguments, List<string> parameters)
         {
             arguments = arguments ?? new Dictionary<string, decimal>();
 
