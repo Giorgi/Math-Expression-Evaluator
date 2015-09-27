@@ -234,7 +234,7 @@ namespace SimpleExpressionEvaluator
             while ((peek = reader.Peek()) > -1)
             {
                 var next = (char)peek;
-
+                
                 if (char.IsDigit(next) || next == '.')
                 {
                     reader.Read();
@@ -308,8 +308,6 @@ namespace SimpleExpressionEvaluator
 
     internal sealed class Operation : Symbol
     {
-        private readonly int precedence;
-        private readonly string name;
         private readonly Func<Expression, Expression, Expression> operation;
         private readonly Func<Expression, Expression> unaryOperation;
 
@@ -329,8 +327,8 @@ namespace SimpleExpressionEvaluator
 
         private Operation(int precedence, string name)
         {
-            this.name = name;
-            this.precedence = precedence;
+            Name = name;
+            Precedence = precedence;
         }
 
         private Operation(int precedence, Func<Expression, Expression> unaryOperation, string name) : this(precedence, name)
@@ -345,12 +343,11 @@ namespace SimpleExpressionEvaluator
             NumberOfOperands = 2;
         }
 
+        public string Name { get; private set; }
+
         public int NumberOfOperands { get; private set; }
 
-        public int Precedence
-        {
-            get { return precedence; }
-        }
+        public int Precedence { get; private set; }
 
         public static explicit operator Operation(char operation)
         {
