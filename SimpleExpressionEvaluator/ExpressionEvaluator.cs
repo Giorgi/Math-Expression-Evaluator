@@ -12,7 +12,7 @@ namespace SimpleExpressionEvaluator
     public class ExpressionEvaluator : DynamicObject
     {
         private readonly Stack<Expression> expressionStack = new Stack<Expression>();
-        private readonly Stack<char> operatorStack = new Stack<char>();
+        private readonly Stack<Symbol> operatorStack = new Stack<Symbol>();
         private readonly List<string> parameters = new List<string>();
 
 
@@ -20,11 +20,13 @@ namespace SimpleExpressionEvaluator
         {
             var compiled = Parse(expression);
 
-            Func<object, decimal> result = argument =>
+            Func<List<string>, Func<object, decimal>> curriedResult = list => argument =>
             {
                 var arguments = ParseArguments(argument);
-                return Execute(compiled, arguments);
+                return Execute(compiled, arguments, list);
             };
+
+            var result = curriedResult(parameters.ToList());
 
             return result;
         }
@@ -105,26 +107,40 @@ namespace SimpleExpressionEvaluator
 
                     if (Operation.IsDefined(next))
                     {
+                        if (next == '-' && expressionStack.Count == 0)
+                        {
+                            reader.Read();
+                            operatorStack.Push(Operation.UnaryMinus);
+                            continue;
+                        }
+
                         var currentOperation = ReadOperation(reader);
 
-                        EvaluateWhile(() => operatorStack.Count > 0 && operatorStack.Peek() != '(' &&
+                        EvaluateWhile(() => operatorStack.Count > 0 && operatorStack.Peek() != Parentheses.Left &&
                             currentOperation.Precedence <= ((Operation)operatorStack.Peek()).Precedence);
 
-                        operatorStack.Push(next);
+                        operatorStack.Push(currentOperation);
                         continue;
                     }
 
                     if (next == '(')
                     {
                         reader.Read();
-                        operatorStack.Push('(');
+                        operatorStack.Push(Parentheses.Left);
+
+                        if (reader.Peek() == '-')
+                        {
+                            reader.Read();
+                            operatorStack.Push(Operation.UnaryMinus);
+                        }
+
                         continue;
                     }
 
                     if (next == ')')
                     {
                         reader.Read();
-                        EvaluateWhile(() => operatorStack.Count > 0 && operatorStack.Peek() != '(');
+                        EvaluateWhile(() => operatorStack.Count > 0 && operatorStack.Peek() != Parentheses.Left);
                         operatorStack.Pop();
                         continue;
                     }
@@ -170,10 +186,10 @@ namespace SimpleExpressionEvaluator
         {
             var compiled = Parse(expression);
 
-            return Execute(compiled, arguments);
+            return Execute(compiled, arguments, parameters);
         }
 
-        private decimal Execute(Func<decimal[], decimal> compiled, Dictionary<string, decimal> arguments)
+        private decimal Execute(Func<decimal[], decimal> compiled, Dictionary<string, decimal> arguments, List<string> parameters)
         {
             arguments = arguments ?? new Dictionary<string, decimal>();
 
@@ -200,10 +216,15 @@ namespace SimpleExpressionEvaluator
         {
             while (condition())
             {
-                var right = expressionStack.Pop();
-                var left = expressionStack.Pop();
+                var operation = (Operation)operatorStack.Pop();
 
-                expressionStack.Push(((Operation)operatorStack.Pop()).Apply(left, right));
+                var expressions = new Expression[operation.NumberOfOperands];
+                for (var i = operation.NumberOfOperands - 1; i >= 0; i--)
+                {
+                    expressions[i] = expressionStack.Pop();
+                }
+
+                expressionStack.Push(operation.Apply(expressions));
             }
         }
 
@@ -217,7 +238,10 @@ namespace SimpleExpressionEvaluator
             {
                 var next = (char)peek;
 
-                if (char.IsDigit(next) || next == '.')
+                var decimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator[0];
+                var groupSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator[0];
+
+                if (char.IsDigit(next) || next == decimalSeparator || next == groupSeparator)
                 {
                     reader.Read();
                     operand += next;
@@ -228,7 +252,7 @@ namespace SimpleExpressionEvaluator
                 }
             }
 
-            return Expression.Constant(decimal.Parse(operand, CultureInfo.InvariantCulture));
+            return Expression.Constant(decimal.Parse(operand));
         }
 
         private Operation ReadOperation(TextReader reader)
@@ -288,16 +312,16 @@ namespace SimpleExpressionEvaluator
         }
     }
 
-    internal sealed class Operation
+    internal sealed class Operation : Symbol
     {
-        private readonly int precedence;
-        private readonly string name;
         private readonly Func<Expression, Expression, Expression> operation;
+        private readonly Func<Expression, Expression> unaryOperation;
 
         public static readonly Operation Addition = new Operation(1, Expression.Add, "Addition");
         public static readonly Operation Subtraction = new Operation(1, Expression.Subtract, "Subtraction");
         public static readonly Operation Multiplication = new Operation(2, Expression.Multiply, "Multiplication");
         public static readonly Operation Division = new Operation(2, Expression.Divide, "Division");
+        public static readonly Operation UnaryMinus = new Operation(2, Expression.Negate, "Negation");
 
         private static readonly Dictionary<char, Operation> Operations = new Dictionary<char, Operation>
         {
@@ -307,17 +331,29 @@ namespace SimpleExpressionEvaluator
             { '/', Division }
         };
 
-        private Operation(int precedence, Func<Expression, Expression, Expression> operation, string name)
+        private Operation(int precedence, string name)
         {
-            this.precedence = precedence;
-            this.operation = operation;
-            this.name = name;
+            Name = name;
+            Precedence = precedence;
         }
 
-        public int Precedence
+        private Operation(int precedence, Func<Expression, Expression> unaryOperation, string name) : this(precedence, name)
         {
-            get { return precedence; }
+            this.unaryOperation = unaryOperation;
+            NumberOfOperands = 1;
         }
+
+        private Operation(int precedence, Func<Expression, Expression, Expression> operation, string name) : this(precedence, name)
+        {
+            this.operation = operation;
+            NumberOfOperands = 2;
+        }
+
+        public string Name { get; private set; }
+
+        public int NumberOfOperands { get; private set; }
+
+        public int Precedence { get; private set; }
 
         public static explicit operator Operation(char operation)
         {
@@ -333,7 +369,12 @@ namespace SimpleExpressionEvaluator
             }
         }
 
-        public Expression Apply(Expression left, Expression right)
+        private Expression Apply(Expression expression)
+        {
+            return unaryOperation(expression);
+        }
+
+        private Expression Apply(Expression left, Expression right)
         {
             return operation(left, right);
         }
@@ -342,5 +383,35 @@ namespace SimpleExpressionEvaluator
         {
             return Operations.ContainsKey(operation);
         }
+
+        public Expression Apply(params Expression[] expressions)
+        {
+            if (expressions.Length == 1)
+            {
+                return Apply(expressions[0]);
+            }
+
+            if (expressions.Length == 2)
+            {
+                return Apply(expressions[0], expressions[1]);
+            }
+
+            throw new NotImplementedException();
+        }
+    }
+
+    internal class Parentheses : Symbol
+    {
+        public static readonly Parentheses Left = new Parentheses();
+        public static readonly Parentheses Right = new Parentheses();
+
+        private Parentheses()
+        {
+
+        }
+    }
+
+    internal class Symbol
+    {
     }
 }

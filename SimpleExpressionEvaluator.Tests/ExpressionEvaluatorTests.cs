@@ -1,5 +1,6 @@
 ﻿using System;
-
+using System.Globalization;
+using System.Threading;
 using NUnit.Framework;
 
 namespace SimpleExpressionEvaluator.Tests
@@ -39,12 +40,22 @@ namespace SimpleExpressionEvaluator.Tests
         [Test]
         public void Can_Add_Two_Decimal_Numbers()
         {
+            var clone = (CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
+            clone.NumberFormat.NumberDecimalSeparator = ".";
+            clone.NumberFormat.NumberGroupSeparator = " ";
+            Thread.CurrentThread.CurrentCulture = clone;
+
             Assert.That(engine.Evaluate("2.7+3.2"), Is.EqualTo(2.7m + 3.2m));
         }
 
         [Test]
         public void Can_Add_Many_Numbers()
         {
+            var clone = (CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
+            clone.NumberFormat.NumberDecimalSeparator = ".";
+            clone.NumberFormat.NumberGroupSeparator = " ";
+            Thread.CurrentThread.CurrentCulture = clone;
+
             Assert.That(engine.Evaluate("1.2+3.4+5.6+7.8"), Is.EqualTo(1.2m + 3.4m + 5.6m + 7.8m));
             Assert.That(engine.Evaluate("1.7+2.9+14.24+6.58"), Is.EqualTo(1.7m + 2.9m + 14.24m + 6.58m));
         }
@@ -58,12 +69,22 @@ namespace SimpleExpressionEvaluator.Tests
         [Test]
         public void Can_Subtract_Multiple_Numbers()
         {
+            var clone = (CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
+            clone.NumberFormat.NumberDecimalSeparator = ".";
+            clone.NumberFormat.NumberGroupSeparator = " ";
+            Thread.CurrentThread.CurrentCulture = clone;
+
             Assert.That(engine.Evaluate("15.2-2.3-4.8-0.58"), Is.EqualTo(15.2m - 2.3m - 4.8m - 0.58m));
         }
 
         [Test]
         public void Can_Add_And_Subtract_Multiple_Numbers()
         {
+            var clone = (CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
+            clone.NumberFormat.NumberDecimalSeparator = ".";
+            clone.NumberFormat.NumberGroupSeparator = " ";
+            Thread.CurrentThread.CurrentCulture = clone;
+
             Assert.That(engine.Evaluate("15+8-4-2+7"), Is.EqualTo(15 + 8 - 4 - 2 + 7));
             Assert.That(engine.Evaluate("17.89-2.47+7.16"), Is.EqualTo(17.89m - 2.47m + 7.16m));
 
@@ -72,6 +93,11 @@ namespace SimpleExpressionEvaluator.Tests
         [Test]
         public void Can_Add_Subtract_Multiply_Divide_Multiple_Numbers()
         {
+            var clone = (CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
+            clone.NumberFormat.NumberDecimalSeparator = ".";
+            clone.NumberFormat.NumberGroupSeparator = " ";
+            Thread.CurrentThread.CurrentCulture = clone;
+
             Assert.That(engine.Evaluate("50-5*3*2+7"), Is.EqualTo(50 - 5 * 3 * 2 + 7));
             Assert.That(engine.Evaluate("84+15+4-4*3*9+24+4-54/3-5-7+47"), Is.EqualTo(84 + 15 + 4 - 4 * 3 * 9 + 24 + 4 - 54 / 3 - 5 - 7 + 47));
             Assert.That(engine.Evaluate("50-48/4/3+7*2*4+2+5+8"), Is.EqualTo(50 - 48 / 4 / 3 + 7 * 2 * 4 + 2 + 5 + 8));
@@ -140,6 +166,55 @@ namespace SimpleExpressionEvaluator.Tests
             c = 7.5m;
 
             Assert.That(compiled(new { a, b, c }), Is.EqualTo((a + b) / (a + c)));
+        }
+
+        [Test]
+        public void NegativeNumber_Parsed_AsNegativeNumber()
+        {
+            var left = -generator.Next(1, 100);
+
+            Assert.That(engine.Evaluate(left.ToString()), Is.EqualTo(left));
+        }
+
+        [Test]
+        public void Can_EvaluateExpression_WithNegativeNumbers()
+        {
+            Assert.That(engine.Evaluate("-5 + 3"), Is.EqualTo(-5 + 3));
+            Assert.That(engine.Evaluate("5 + (-3)"), Is.EqualTo(5 + (-3)));
+
+            Assert.That(engine.Evaluate("5 + (4-3)"), Is.EqualTo(5 + (4 - 3)));
+            Assert.That(engine.Evaluate("5 + (-(4-3))"), Is.EqualTo(5 + (-(4 - 3))));
+        }
+
+        [Test]
+        public void Can_ParseNumbers_InDifferentCulture()
+        {
+            var clone = (CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
+            clone.NumberFormat.NumberDecimalSeparator = ",";
+            clone.NumberFormat.NumberGroupSeparator = " ";
+            Thread.CurrentThread.CurrentCulture = clone;
+
+            Assert.That(engine.Evaluate("5,67"), Is.EqualTo(5.67));
+            Assert.That(engine.Evaluate("5 000"), Is.EqualTo(5000));
+
+            Assert.That(engine.Evaluate("5 000,67"), Is.EqualTo(5000.67));
+        }
+
+        [Test]
+        public void Can_Invoke_Two_Distinct_Expressions_With_Different_Parameters_Count()
+        {
+            var a = 6m;
+            var b = 3.9m;
+            var c = 4.9m;
+
+            var compiled = engine.Compile("(a+b)/(a+c)");
+            var compiled2 = engine.Compile("(a+b)/a");
+            Assert.That(compiled(new { a, b, c }), Is.EqualTo((a + b) / (a + c)));
+
+            a = 5.4m;
+            b = -2.4m;
+
+            Assert.That(compiled2(new { a, b }), Is.EqualTo((a + b) / a));
         }
     }
 }
