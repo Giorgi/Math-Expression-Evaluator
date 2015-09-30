@@ -11,10 +11,26 @@ namespace SimpleExpressionEvaluator
 {
     public class ExpressionEvaluator : DynamicObject
     {
+        public CultureInfo Culture { get; set; }
         private readonly Stack<Expression> expressionStack = new Stack<Expression>();
         private readonly Stack<Symbol> operatorStack = new Stack<Symbol>();
         private readonly List<string> parameters = new List<string>();
 
+        /// <summary>
+        /// Initializes new instance of <see cref="ExpressionEvaluator"></see> using <see cref="CultureInfo.InvariantCulture" />
+        /// </summary>
+        public ExpressionEvaluator() : this(CultureInfo.InvariantCulture)
+        {
+        }
+
+        /// <summary>
+        /// Initializes new instance of <see cref="ExpressionEvaluator"></see> using specified culture info
+        /// </summary>
+        /// <param name="culture">Culture to use for parsing decimal numbers</param>
+        public ExpressionEvaluator(CultureInfo culture)
+        {
+            Culture = culture;
+        }
 
         public Func<object, decimal> Compile(string expression)
         {
@@ -230,6 +246,9 @@ namespace SimpleExpressionEvaluator
 
         private Expression ReadOperand(TextReader reader)
         {
+            var decimalSeparator = Culture.NumberFormat.NumberDecimalSeparator[0];
+            var groupSeparator = Culture.NumberFormat.NumberGroupSeparator[0];
+
             var operand = string.Empty;
 
             int peek;
@@ -237,9 +256,6 @@ namespace SimpleExpressionEvaluator
             while ((peek = reader.Peek()) > -1)
             {
                 var next = (char)peek;
-
-                var decimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator[0];
-                var groupSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator[0];
 
                 if (char.IsDigit(next) || next == decimalSeparator || next == groupSeparator)
                 {
@@ -252,7 +268,7 @@ namespace SimpleExpressionEvaluator
                 }
             }
 
-            return Expression.Constant(decimal.Parse(operand));
+            return Expression.Constant(decimal.Parse(operand, Culture));
         }
 
         private Operation ReadOperation(TextReader reader)

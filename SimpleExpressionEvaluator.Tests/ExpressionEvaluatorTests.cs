@@ -167,12 +167,13 @@ namespace SimpleExpressionEvaluator.Tests
             var clone = (CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
             clone.NumberFormat.NumberDecimalSeparator = ",";
             clone.NumberFormat.NumberGroupSeparator = " ";
-            Thread.CurrentThread.CurrentCulture = clone;
 
-            Assert.That(engine.Evaluate("5,67"), Is.EqualTo(5.67));
-            Assert.That(engine.Evaluate("5 000"), Is.EqualTo(5000));
+            var engineWithCulture = new ExpressionEvaluator(clone);
 
-            Assert.That(engine.Evaluate("5 000,67"), Is.EqualTo(5000.67));
+            Assert.That(engineWithCulture.Evaluate("5,67"), Is.EqualTo(5.67));
+            Assert.That(engineWithCulture.Evaluate("5 000"), Is.EqualTo(5000));
+
+            Assert.That(engineWithCulture.Evaluate("5 000,67"), Is.EqualTo(5000.67));
         }
 
         [Test]
