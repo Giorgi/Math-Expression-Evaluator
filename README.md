@@ -1,4 +1,4 @@
-# Math Expression Evaluator  [![NuGet Version](https://img.shields.io/nuget/v/Math-Expression-Evaluator.svg?style=flat)](https://www.nuget.org/packages/Math-Expression-Evaluator//) 
+# Math Expression Evaluator  [![NuGet Version](https://buildstats.info/nuget/Math-Expression-Evaluator)](https://www.nuget.org/packages/Math-Expression-Evaluator//) 
 
 Math Expression Evaluator is a library for evaluating simple mathematical expressions. It supports simple expressions such as `2.5+5.9`, `17.89-2.47+7.16`, `5/2/2+1.5*3+4.58`, expressions with parentheses `(((9-6/2)*2-4)/2-6-1)/(2+24/(2+4))` and expressions with variables:
 
