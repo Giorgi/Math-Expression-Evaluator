@@ -10,7 +10,7 @@ namespace SimpleExpressionEvaluator.Tests
         private ExpressionEvaluator engine;
         private Random generator;
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             engine = new ExpressionEvaluator();
