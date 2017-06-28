@@ -209,12 +209,12 @@ namespace SimpleExpressionEvaluator
         {
             arguments = arguments ?? new Dictionary<string, decimal>();
 
-            if (parameters.Count != arguments.Count)
+            if (arguments.Count < parameters.Count)
             {
                 throw new ArgumentException(string.Format("Expression contains {0} parameters but got only {1}",
                     parameters.Count, arguments.Count));
             }
-
+            
             var missingParameters = parameters.Where(p => !arguments.ContainsKey(p)).ToList();
 
             if (missingParameters.Any())
