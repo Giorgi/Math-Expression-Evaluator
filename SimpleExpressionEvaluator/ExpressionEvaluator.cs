@@ -56,7 +56,7 @@ namespace SimpleExpressionEvaluator
 
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
-            if ("Evaluate" != binder.Name)
+            if (nameof(Evaluate) != binder.Name)
             {
                 return base.TryInvokeMember(binder, args, out result);
             }
@@ -168,7 +168,7 @@ namespace SimpleExpressionEvaluator
                     else
                     {
                         throw new ArgumentException(string.Format("Encountered invalid character {0}", next),
-                            "expression");
+                            nameof(expression));
                     }
                 }
             }
