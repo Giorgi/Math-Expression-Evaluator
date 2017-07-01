@@ -167,8 +167,7 @@ namespace SimpleExpressionEvaluator
                     }
                     else
                     {
-                        throw new ArgumentException(string.Format("Encountered invalid character {0}", next),
-                            nameof(expression));
+                        throw new ArgumentException($"Encountered invalid character {next}", nameof(expression));
                     }
                 }
             }
@@ -211,8 +210,7 @@ namespace SimpleExpressionEvaluator
 
             if (parameters.Count != arguments.Count)
             {
-                throw new ArgumentException(string.Format("Expression contains {0} parameters but got only {1}",
-                    parameters.Count, arguments.Count));
+                throw new ArgumentException($"Expression contains {parameters.Count} parameters but got {arguments.Count} arguments");
             }
 
             var missingParameters = parameters.Where(p => !arguments.ContainsKey(p)).ToList();
