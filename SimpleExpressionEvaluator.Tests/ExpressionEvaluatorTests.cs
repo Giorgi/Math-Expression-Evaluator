@@ -192,5 +192,17 @@ namespace SimpleExpressionEvaluator.Tests
 
             Assert.That(compiled2(new { a, b }), Is.EqualTo((a + b) / a));
         }
+
+        [Test]
+        public void Should_Ignore_Parameters_That_Is_Not_In_Expression()
+        {
+            var a = 6m;
+            var b = 3.9m;
+            var c = 4.9m;
+            var d = 10m;
+
+            var compiled = engine.Compile("a+b+c");
+            Assert.That(compiled(new {a, b, c, d}), Is.EqualTo(a + b + c));
+        }
     }
 }
