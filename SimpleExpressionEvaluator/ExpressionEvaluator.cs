@@ -9,8 +9,14 @@ using System.Reflection;
 
 namespace SimpleExpressionEvaluator
 {
+    /// <summary>
+    /// Class for compiling and evaluating simple mathematical expressions
+    /// </summary>
     public class ExpressionEvaluator : DynamicObject
     {
+        /// <summary>
+        /// Gets the current culture used by <see cref="ExpressionEvaluator"></see> when parsing strings into numbers
+        /// </summary>
         public CultureInfo Culture { get; set; }
         private readonly Stack<Expression> expressionStack = new Stack<Expression>();
         private readonly Stack<Symbol> operatorStack = new Stack<Symbol>();
@@ -32,6 +38,11 @@ namespace SimpleExpressionEvaluator
             Culture = culture;
         }
 
+        /// <summary>
+        /// Compiles parameterized mathematical expression into a delegate which can be invoked with different arguments without having to parse the expression again.
+        /// </summary>
+        /// <param name="expression">Expression to parse and compile</param>
+        /// <returns>Delegate compiled from the expression</returns>
         public Func<object, decimal> Compile(string expression)
         {
             var compiled = Parse(expression);
@@ -47,6 +58,12 @@ namespace SimpleExpressionEvaluator
             return result;
         }
 
+        /// <summary>
+        /// Parses and evaluates an expression with the specified arguments
+        /// </summary>
+        /// <param name="expression">Expression to parse</param>
+        /// <param name="argument">An object containing arguments for the expression</param>
+        /// <returns></returns>
         public decimal Evaluate(string expression, object argument = null)
         {
             var arguments = ParseArguments(argument);
@@ -54,6 +71,13 @@ namespace SimpleExpressionEvaluator
             return Evaluate(expression, arguments);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="binder"></param>
+        /// <param name="args"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
         public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
             if (nameof(Evaluate) != binder.Name)
