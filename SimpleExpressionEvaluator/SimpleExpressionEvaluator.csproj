@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,8 +10,19 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SimpleExpressionEvaluator</RootNamespace>
     <AssemblyName>SimpleExpressionEvaluator</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFramework>net40</TargetFramework>
     <FileAlignment>512</FileAlignment>
+    <Description>A C# library for parsing mathematical expressions with support for parentheses and variables.</Description>
+    <Copyright>Copyright © Giorgi 2012-2017</Copyright>
+    <Title>Math Expression Evaluator</Title>
+    <Version>1.2.0</Version>
+    <Authors>Giorgi Dalakishvili</Authors>
+    <PackageId>Math-Expression-Evaluator</PackageId>
+    <Company>Giorgi Dalakishvili</Company>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageProjectUrl>https://github.com/Giorgi/Math-Expression-Evaluator</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Giorgi/Math-Expression-Evaluator</RepositoryUrl>
+    <PackageTags>Math Expression Evaluator</PackageTags>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -37,14 +48,6 @@
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="ExpressionEvaluator.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="SimpleExpressionEvaluator.nuspec" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
