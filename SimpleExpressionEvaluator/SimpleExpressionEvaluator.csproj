@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SimpleExpressionEvaluator</RootNamespace>
     <AssemblyName>SimpleExpressionEvaluator</AssemblyName>
-    <TargetFramework>net40</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <FileAlignment>512</FileAlignment>
     <Description>A C# library for parsing mathematical expressions with support for parentheses and variables.</Description>
     <Copyright>Copyright © Giorgi 2012-2017</Copyright>
@@ -43,11 +43,6 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\SimpleExpressionEvaluator.xml</DocumentationFile>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
