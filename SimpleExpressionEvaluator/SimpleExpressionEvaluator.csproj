@@ -23,6 +23,7 @@
     <PackageProjectUrl>https://github.com/Giorgi/Math-Expression-Evaluator</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Giorgi/Math-Expression-Evaluator</RepositoryUrl>
     <PackageTags>Math Expression Evaluator</PackageTags>
+    <PackageReleaseNotes>The library now targets .NET Standard 2.0</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
