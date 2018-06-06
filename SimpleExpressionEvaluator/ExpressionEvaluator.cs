@@ -111,7 +111,19 @@ namespace SimpleExpressionEvaluator
 
             return true;
         }
+        /// <summary>
+        /// Parses and evaluates an expression with a Dictionary of arguments
+        /// </summary>
+        /// <param name="expression">Expression to parse</param>
+        /// <param name="arguments">An Dictionary object containing arguments for the expression
+        ///   The key pairs matching the variable names in the expression</param>
+        /// <returns></returns>
+        public decimal Evaluate(string expression, Dictionary<string, decimal> arguments)
+        {
+            var compiled = Parse(expression);
 
+            return Execute(compiled, arguments, parameters);
+        }
 
         private Func<decimal[], decimal> Parse(string expression)
         {
@@ -220,13 +232,7 @@ namespace SimpleExpressionEvaluator
 
             return arguments;
         }
-
-        private decimal Evaluate(string expression, Dictionary<string, decimal> arguments)
-        {
-            var compiled = Parse(expression);
-
-            return Execute(compiled, arguments, parameters);
-        }
+        
 
         private decimal Execute(Func<decimal[], decimal> compiled, Dictionary<string, decimal> arguments, List<string> parameters)
         {
