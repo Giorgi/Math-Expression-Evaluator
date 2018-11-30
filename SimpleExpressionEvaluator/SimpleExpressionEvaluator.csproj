@@ -15,9 +15,9 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <FileAlignment>512</FileAlignment>
     <Description>A C# library for parsing mathematical expressions with support for parentheses and variables.</Description>
-    <Copyright>Copyright © Giorgi 2012-2018</Copyright>
+    <Copyright>Copyright © Giorgi 2012-2019</Copyright>
     <Title>Math Expression Evaluator</Title>
-    <Version>1.3.0</Version>
+    <Version>1.3.1</Version>
     <Authors>Giorgi Dalakishvili</Authors>
     <PackageId>Math-Expression-Evaluator</PackageId>
     <Company>Giorgi Dalakishvili</Company>
@@ -26,6 +26,7 @@
     <RepositoryUrl>https://github.com/Giorgi/Math-Expression-Evaluator</RepositoryUrl>
     <PackageTags>Math Expression Evaluator</PackageTags>
     <PackageReleaseNotes>The library now targets .NET Standard 2.0</PackageReleaseNotes>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
