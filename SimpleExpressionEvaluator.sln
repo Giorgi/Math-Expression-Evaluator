@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleExpressionEvaluator", "SimpleExpressionEvaluator\SimpleExpressionEvaluator.csproj", "{30637214-EDE9-4C2E-BFD6-E4B163FA308B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleExpressionEvaluator.Tests", "SimpleExpressionEvaluator.Tests\SimpleExpressionEvaluator.Tests.csproj", "{08F4484E-5FD8-4590-A8D7-12FBE47120C8}"
