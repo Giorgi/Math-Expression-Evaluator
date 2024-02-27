@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using NUnit.Framework;
@@ -124,6 +125,21 @@ namespace SimpleExpressionEvaluator.Tests
             var c = 2.6m;
 
             Assert.That(dynamicEngine.Evaluate("(c+b)*a", a: 6, b: 4.5, c: 2.6), Is.EqualTo((c + b) * a));
+        }
+        [Test]
+        public void Can_Pass_A_Dictionary()
+        {
+            dynamic dynamicEngine = new ExpressionEvaluator();
+
+            var a = 6;
+            var b = 4.5m;
+            var c = 2.6m;
+            Dictionary<String, decimal> dict = new Dictionary<string, decimal>();
+            dict.Add("a", a);
+            dict.Add("b", b);
+            dict.Add("c", c); 
+
+            Assert.That(dynamicEngine.Evaluate("(c+b)*a", dict), Is.EqualTo((c + b) * a));
         }
 
         [Test]
