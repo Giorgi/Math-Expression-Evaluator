@@ -33,3 +33,15 @@ Assert.That(dynamicEngine.Evaluate("(c+b)*a", a: 6, b: 4.5, c: 2.6),
 ```
 dotnet add package Math-Expression-Evaluator
 ```
+
+## User Feedback
+
+From https://stackoverflow.com/questions/50722680/methods-for-dynamically-creating-an-array-in-c-sharp
+
+DavidG
+> Can't decide if this library is evil, genius or evil genius...
+
+xanatos
+> That library is using high level magic... Very high level :-)
+
+> The class is dynamic and is handling in a dynamic way the use of the method... fascinating
