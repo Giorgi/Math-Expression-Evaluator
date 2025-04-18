@@ -3,6 +3,15 @@
 [![NuGet Downloads](https://img.shields.io/nuget/dt/Math-Expression-Evaluator?style=for-the-badge)](https://www.nuget.org/packages/Math-Expression-Evaluator/)
 [![NuGet Version](https://img.shields.io/nuget/v/Math-Expression-Evaluator?style=for-the-badge)](https://www.nuget.org/packages/Math-Expression-Evaluator/)
 
+
+## Sponsors
+
+[Entity Framework Extensions](https://entityframework-extensions.net/) and [Dapper Plus](https://dapper-plus.net/) are major sponsors and are proud to contribute to the development of Math Expression Evaluator.
+
+[![Entity Framework Extensions - Sponsor](.github/sponsors/entity-framework-extensions-sponsr.png)](https://entityframework-extensions.net/bulk-insert)
+
+[![Dapper Plus - Sponsor](.github/sponsors/dapper-plus-sponsor.png)](https://dapper-plus.net/bulk-insert)
+
 ## Usage
 
 Math Expression Evaluator is a library for evaluating simple mathematical expressions. It supports simple expressions such as `2.5+5.9`, `17.89-2.47+7.16`, `5/2/2+1.5*3+4.58`, expressions with parentheses `(((9-6/2)*2-4)/2-6-1)/(2+24/(2+4))` and expressions with variables:

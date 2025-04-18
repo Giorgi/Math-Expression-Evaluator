@@ -15,11 +15,16 @@
     <Authors>Giorgi Dalakishvili</Authors>
     <PackageId>Math-Expression-Evaluator</PackageId>
     <Company>Giorgi Dalakishvili</Company>
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(Configuration)'=='Release'">True</ContinuousIntegrationBuild>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageProjectUrl>https://github.com/Giorgi/Math-Expression-Evaluator</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Giorgi/Math-Expression-Evaluator</RepositoryUrl>
+    <PackageIcon>Icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>Math Expression Evaluator</PackageTags>
+    <PackageProjectUrl>https://github.com/Giorgi/Math-Expression-Evaluator</PackageProjectUrl>
     <PackageReleaseNotes>The library now targets .NET Standard 2.0</PackageReleaseNotes>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
   
@@ -40,5 +45,16 @@
   
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\Icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 </Project>
