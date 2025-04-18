@@ -8,9 +8,9 @@
 
 [Entity Framework Extensions](https://entityframework-extensions.net/) and [Dapper Plus](https://dapper-plus.net/) are major sponsors and are proud to contribute to the development of Math Expression Evaluator.
 
-[![Entity Framework Extensions - Sponsor](.github/sponsors/entity-framework-extensions-sponsr.png)](https://entityframework-extensions.net/bulk-insert)
+[![Entity Framework Extensions - Sponsor](https://raw.githubusercontent.com/Giorgi/Math-Expression-Evaluator/master/.github/sponsors/entity-framework-extensions-sponsr.png)](https://entityframework-extensions.net/bulk-insert)
 
-[![Dapper Plus - Sponsor](.github/sponsors/dapper-plus-sponsor.png)](https://dapper-plus.net/bulk-insert)
+[![Dapper Plus - Sponsor](https://raw.githubusercontent.com/Giorgi/Math-Expression-Evaluator/master/.github/sponsors/dapper-plus-sponsor.png)](https://dapper-plus.net/bulk-insert)
 
 ## Usage
 
